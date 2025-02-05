@@ -1,27 +1,93 @@
 
 const form = document.getElementById("registration");
+
+
+// =================================================== 1. Registration Form - Username Validation: ====================================================
 const username = form.elements.username; // Get the username input
 const usernameError = document.getElementById("usernameError"); // Error message element
 
 console.log(username);
 
-username.addEventListener("change", function(e){
-    e.preventDefault(); // Prevent default behavior (optional for "change" event)
-
-    // reset error message
+username.addEventListener("input", function(e){
+    //* reset error message
     usernameError.textContent = "";
-
-    // Get the username value and trim whitespace using .trim()
+    
+    //* Get the username value and trim whitespace using .trim()
     const usernameValue = e.target.value.trim();
     console.log(usernameValue);
-
-    // Check for at least two unique characters
+    
+    //* Check for at least two unique characters
     const uniqueChars = new Set(usernameValue).size;
     if (uniqueChars < 2) {
-        usernameError.textContent = "Username must have at least two unique characters."
+        usernameError.textContent = "Username must have at least two unique characters.";
         return;
     }
 
+    //* Check for valid length (at least 4 alphanumeric characters)
+    if (!/^[a-zA-Z0-9]{4,}$/.test(usernameValue)) { // test() is used to validate that the username contains no special characters or spaces, ensuring that only alphanumeric characters are allowed.
+        usernameError.textContent = "Username must be at least 4 alphanumeric characters.";
+        return;
+    }
+    
     // if all validations pass, clear any previous error message
     usernameError.textContent = "";
+})
+
+
+
+// =================================================== 2. Registration Form - Email Validation: ======================================================
+//* The email must be a valid email address.
+//* The email must not be from the domain "example.com."
+
+const emailInput = form.elements.email;
+const emailError = document.getElementById("emailError");
+
+emailInput.addEventListener("input", function (e) {
+    emailError.textContent = ""; // reset error message
+    
+    const emailValue = e.target.value.trim();
+    
+    //* 1. check if the email is a valid format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(emailValue)) {
+        emailError.textContent = "Please enter a valid email address.";
+        return;
+    }
+    
+    //* 2. check for the restricted "example.com" domain
+    if (emailValue.endsWith("@example.com")) {
+        emailError.textContent = "Emails from 'example.com' are not allowed.";
+    }
+    
+})
+
+
+
+// =================================================== 3. Registration Form - Password Validation: ======================================================
+//* Passwords must contain at least one number.
+//* Passwords must contain at least one special character.
+//* Passwords cannot contain the word "password" (uppercase, lowercase, or mixed).
+//* Passwords cannot contain the username.
+//* Both passwords must match.
+
+const passwordInput = form.elements.password;
+const passwordError = document.getElementById("passwordError");
+
+passwordInput.addEventListener("input", function (e) {
+    passwordError.textContent = "";
+    
+    const passwordValue = e.target.value.trim();
+    
+    //* 1. Passwords must be at least 12 characters long.
+    if (passwordValue < 12) {
+        passwordError.textContent = "Password must be at least 12 characters long.";
+        return;
+    }
+    
+    //* 2. Passwords must have at least one uppercase and one lowercase letter.
+    if (!/[a-z]/.test(passwordValue) || !/[A-Z]/.test(passwordValue)) {
+        passwordError.textContent = "Password must have at least one uppercase and one lowercase letter.";
+        // return;
+    }
+    
 })
