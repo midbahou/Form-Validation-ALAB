@@ -64,30 +64,60 @@ emailInput.addEventListener("input", function (e) {
 
 
 // =================================================== 3. Registration Form - Password Validation: ======================================================
-//* Passwords must contain at least one number.
-//* Passwords must contain at least one special character.
-//* Passwords cannot contain the word "password" (uppercase, lowercase, or mixed).
-//* Passwords cannot contain the username.
-//* Both passwords must match.
 
 const passwordInput = form.elements.password;
+const passwordCheckInput = form.elements.passwordCheck;
 const passwordError = document.getElementById("passwordError");
 
 passwordInput.addEventListener("input", function (e) {
     passwordError.textContent = "";
     
     const passwordValue = e.target.value.trim();
+    const usernameValue = form.elements.username.value.trim();
     
     //* 1. Passwords must be at least 12 characters long.
-    if (passwordValue < 12) {
+    if (passwordValue.length < 12) {
         passwordError.textContent = "Password must be at least 12 characters long.";
         return;
     }
     
     //* 2. Passwords must have at least one uppercase and one lowercase letter.
-    if (!/[a-z]/.test(passwordValue) || !/[A-Z]/.test(passwordValue)) {
+    else if (!/[a-z]/.test(passwordValue) || !/[A-Z]/.test(passwordValue)) {
         passwordError.textContent = "Password must have at least one uppercase and one lowercase letter.";
-        // return;
+        return;
     }
     
+    //* 3. Password must contain at least one number
+    if (!/\d/.test(passwordValue)) {
+        passwordError.textContent = "Password must contain at least one number.";
+        return;
+    }
+    
+    //* 4. Passwords must contain at least one special character.
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)) {
+        passwordError.textContent = "Password must contain at least one special character.";
+        return;
+    }
+    
+    //* 5. Passwords cannot contain the word "password" (uppercase, lowercase, or mixed).
+    if (/password/i.test(passwordValue)) {
+        passwordError.textContent = "Password cannot contain the word 'password'.";
+        return;
+    }
+    
+    //* 6. Passwords cannot contain the username.
+    if (passwordValue.toLowerCase().includes(usernameValue.toLowerCase())) {
+        passwordError.textContent = "Password cannot contain the username.";
+        return;
+    }
+    
+    //* Both passwords must match.
+    if (passwordValue !== passwordCheckInput.value.trim()) {
+        passwordError.textContent = "Passwords must match.";
+        return;
+    }
+
+    // if all validations pass, clear the error message
+    passwordError.textContent = "";
+
 })
