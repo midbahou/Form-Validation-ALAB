@@ -162,30 +162,31 @@ successMessage.style.color = "green";
 //* Add a submit eventListener to the form
 form.addEventListener("submit", function (e){
     e.preventDefault(); // prevent default form submission (page reload)
-
+    
     // retrieve and clean up input values (trim whitespaces)
     const usernameValue = username.value.trim().toLowerCase();
     const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value.trim();
     const passwordCheck = passwordCheckInput.value.trim();
-
-    // Clear previous success message if any
+    
+    // reset error and clear previous success message if any
+    usernameError.textContent = "";
     successMessage.textContent = "";
-
+    
     // Some simple validations before storing the data
     if (!usernameValue || !email || !password) {
         alert("All fields are required!");
         return; // exit the function if any field is empty
     }
-
+    
     if (password !== passwordCheck) {
         alert("Passwords must match!")
         return; // exit the function if password does not match
     }
-
+    
     // Get the existing list of users from localStorage or initialize an empty array
     const users = JSON.parse(localStorage.getItem("users")) || [];
-
+    
     // check if the username already exists in the user list using a loop
     for (let i = 0; i < users.length; i++) {
         if (users[i].usernameValue === usernameValue) {
@@ -193,32 +194,100 @@ form.addEventListener("submit", function (e){
             break; // stop checking once a duplicate is found
         }
     }
-
+    
     // if the username already exist, show an error and stop the form submission
     let isUsernameTaken = false; // define the variable 
     if (isUsernameTaken) {
-        alert("This username is already taken. Please choose another!");
+        usernameError.textContent = "This username is already taken. Please choose another!";
         return;
     }
-
+    
     // Create a user object with the form data
     const newUser = {
     username: usernameValue,
     email: email,
     password: password,
-    };
+};
 
-    // Add the new user to the list of users
-    users.push(newUser);
+// Add the new user to the list of users
+users.push(newUser);
 
-    // Save the updated user list back to localStorage
-    localStorage.setItem("users", JSON.stringify(users));
+// Save the updated user list back to localStorage
+localStorage.setItem("users", JSON.stringify(users));
 
-    // Clear the form fields after successful registration
-    form.reset();
+// Clear the form fields after successful registration
+form.reset();
 
-    // Display a success message after registration
-    successMessage.textContent = "Registration successful!";
-    form.appendChild(successMessage); // Append the success message to the form
+// Display a success message after registration
+successMessage.textContent = "Registration successful!";
+form.appendChild(successMessage); // Append the success message to the form
 
+})
+
+
+
+
+// =================================================== Part 4: Login Form Validation Requirements ======================================================
+
+//* Get forms and forms elements
+const loginForm = document.getElementById("login");
+const loginUsernameInput = loginForm.elements.username;
+const loginPasswordInput = loginForm.elements.password;
+const keepMeLoggedInCheckBox = loginForm.elements.persist;
+const loginError = document.getElementById("loginError");
+const loginSuccessMessage = document.createElement("p");
+loginSuccessMessage.style.color = "green";
+
+//* handle for submission
+loginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // reset error and success messages
+    loginError.textContent = "";
+    loginSuccessMessage.textContent = "";
+
+    const username = loginUsernameInput.value.trim().toLowerCase();
+    const password = loginPasswordInput.value.trim();
+
+    // load existing users from localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+     //* The username cannot be blank.
+    if (!username) {
+        loginError.textContent = "Username cannot be blank.";
+        return;
+    }
+
+    //* performs a search within the users array stored in localStorage to find a user object that matches the provided username.
+    const user = users.find(user => user.username === username);
+
+    if (!user) {
+        loginError.textContent = "Username does not exist.";
+        return;
+    }
+    
+    //* Password validation
+    if (!password) {
+        loginError.textContent = "Password cannot be blank.";
+        return;
+    }
+
+    //* The password must be correct (validate against localStorage).
+    if (user.password !== password) {
+        loginError.textContent = "Incorrect password.";
+        return;
+    }
+
+    //* If "Keep me logged in" is checked, modify the success message to indicate this (normally, this would be handled by a variety of persistent login tools and technologies).
+    // Show success message with "Keep me logged in" condition
+    if (keepMeLoggedInCheckBox.checked) {
+        loginSuccessMessage.textContent = "Login successful! You will remain logged in.";
+    } else {
+        loginSuccessMessage.textContent = "Login successful!";
+    }
+    
+    loginForm.appendChild(loginSuccessMessage);
+
+    //* If all validation is successful, clear all form fields and show a success message.
+    loginForm.reset();
 })
