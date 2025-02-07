@@ -68,12 +68,15 @@ emailInput.addEventListener("input", function (e) {
 const passwordInput = form.elements.password;
 const passwordCheckInput = form.elements.passwordCheck;
 const passwordError = document.getElementById("passwordError");
+const passwordCheckError = document.getElementById("passwordCheckError");
+
 
 passwordInput.addEventListener("input", function (e) {
-    passwordError.textContent = "";
     
     const passwordValue = e.target.value.trim();
     const usernameValue = form.elements.username.value.trim();
+
+    passwordError.textContent = "";
     
     //* 1. Passwords must be at least 12 characters long.
     if (passwordValue.length < 12) {
@@ -82,7 +85,7 @@ passwordInput.addEventListener("input", function (e) {
     }
     
     //* 2. Passwords must have at least one uppercase and one lowercase letter.
-    else if (!/[a-z]/.test(passwordValue) || !/[A-Z]/.test(passwordValue)) {
+    if (!/[a-z]/.test(passwordValue) || !/[A-Z]/.test(passwordValue)) {
         passwordError.textContent = "Password must have at least one uppercase and one lowercase letter.";
         return;
     }
@@ -111,13 +114,111 @@ passwordInput.addEventListener("input", function (e) {
         return;
     }
     
+    
+    // if all validations pass, clear the error message
+    passwordError.textContent = "";    
+})
+
+passwordCheckInput.addEventListener("input", function (e) {
+    // passwordCheckError.textContent = "";
+
+    const passwordCheckValue = e.target.value.trim();
+
     //* Both passwords must match.
-    if (passwordValue !== passwordCheckInput.value.trim()) {
-        passwordError.textContent = "Passwords must match.";
+    if (passwordInput.value.trim() !== passwordCheckValue) {
+        passwordCheckError.textContent = "Passwords must match.";
         return;
     }
 
     // if all validations pass, clear the error message
-    passwordError.textContent = "";
+    passwordCheckError.textContent = ""; 
+})
+
+
+
+// =================================================== 4. Registration Form - Terms and Conditions: ======================================================
+//* The terms and conditions must be accepted.
+const termsCheckBox = form.elements.terms;
+const termsError = document.querySelector("#termsError");
+
+form.addEventListener("submit", e => {
+    termsError.textContent = "";
+    
+    if (!termsCheckBox.checked) {
+        e.preventDefault();
+        termsError.textContent = "You must accept the terms and conditions.";
+    }
+})
+
+
+
+
+// =================================================== 5. Registration Form - Form Submission: ======================================================
+
+//* create a success message element to show after successful registration
+const successMessage = document.createElement("p");
+successMessage.style.color = "green";
+
+//* Add a submit eventListener to the form
+form.addEventListener("submit", function (e){
+    e.preventDefault(); // prevent default form submission (page reload)
+
+    // retrieve and clean up input values (trim whitespaces)
+    const usernameValue = username.value.trim().toLowerCase();
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value.trim();
+    const passwordCheck = passwordCheckInput.value.trim();
+
+    // Clear previous success message if any
+    successMessage.textContent = "";
+
+    // Some simple validations before storing the data
+    if (!usernameValue || !email || !password) {
+        alert("All fields are required!");
+        return; // exit the function if any field is empty
+    }
+
+    if (password !== passwordCheck) {
+        alert("Passwords must match!")
+        return; // exit the function if password does not match
+    }
+
+    // Get the existing list of users from localStorage or initialize an empty array
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // check if the username already exists in the user list using a loop
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].usernameValue === usernameValue) {
+            isUsernameTaken = true; // flag as taken if a match if found
+            break; // stop checking once a duplicate is found
+        }
+    }
+
+    // if the username already exist, show an error and stop the form submission
+    let isUsernameTaken = false; // define the variable 
+    if (isUsernameTaken) {
+        alert("This username is already taken. Please choose another!");
+        return;
+    }
+
+    // Create a user object with the form data
+    const newUser = {
+    username: usernameValue,
+    email: email,
+    password: password,
+    };
+
+    // Add the new user to the list of users
+    users.push(newUser);
+
+    // Save the updated user list back to localStorage
+    localStorage.setItem("users", JSON.stringify(users));
+
+    // Clear the form fields after successful registration
+    form.reset();
+
+    // Display a success message after registration
+    successMessage.textContent = "Registration successful!";
+    form.appendChild(successMessage); // Append the success message to the form
 
 })

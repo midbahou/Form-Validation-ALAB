@@ -29,28 +29,34 @@
           <span class="input-icon"><i class="fa-solid fa-user"></i></span><br />
           <span id="usernameError" class="error-message"></span><br />
 
+
           <input name="email" type="text" placeholder="Email" />
           <span class="input-icon"><i class="fa-solid fa-envelope"></i></span
           ><br />
           <span id="emailError" class="error-message"></span><br />
+
           
-          <input name="password" type="text" placeholder="Password" />
+          <input name="password" type="text" placeholder="Password" required/>
           <span class="input-icon"><i class="fa-solid fa-key"></i></span><br />
           <span id="passwordError" class="error-message"></span><br />
 
+          
           <input
-            name="passwordCheck"
-            type="text"
-            placeholder="Repeat Password"
+          name="passwordCheck"
+          type="text"
+          placeholder="Repeat Password"
           />
           <span class="input-icon"><i class="fa-solid fa-key"></i></span
-          ><br /><br />
+            ><br /><br />
+          <span id="passwordCheckError" class="error-message"></span><br />
+
 
           <div class="flex-row">
             <input name="terms" type="checkbox" />
             <label for="terms"
               >I agree to the&nbsp;<a href="#">Terms of Use</a>.</label
             >
+            <span id="termsError" class="error-message"></span><br />
             <input type="submit" value="Register" />
           </div>
         </form>
